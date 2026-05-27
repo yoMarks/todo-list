@@ -9,7 +9,10 @@ router.get("/", todoController.todo_list);
 router.post("/", todoController.todo_create);
 
 // Actualizar
-router.put("/:id", todoController.todo_update);
+router.put("/:id", todoController.todo_actualizar_texto);
+
+
+router.patch("/:id", todoController.todo_actualizar_hecho);
 
 // Eliminar
 router.delete("/:id", todoController.todo_delete);

@@ -1,6 +1,6 @@
 const Todo = require("../models/todo");
 
-// Listar todos los todos
+// Listar todo
 exports.todo_list = async (req, res, next) => {
   try {
     const todos = await Todo.find().sort({ date: -1 }).exec();
@@ -10,10 +10,23 @@ exports.todo_list = async (req, res, next) => {
   }
 };
 
-// Crear un todo nuevo
+// Crear nuevo
 exports.todo_create = async (req, res, next) => {
   try {
-    const todo = new Todo({ description: req.body.description });
+    const { description } = req.body;
+
+    if (!description || description.trim() === "") {
+      return res.status(400).json({
+        error: "La descripción es obligatoria",
+      });
+    }
+
+    const todo = new Todo({
+      description: description.trim(),
+      date: new Date(),
+      done: false,
+    });
+
     const saved = await todo.save();
     res.status(201).json(saved);
   } catch (err) {
@@ -21,24 +34,86 @@ exports.todo_create = async (req, res, next) => {
   }
 };
 
-// Actualizar un todo
-exports.todo_update = async (req, res, next) => {
+// Editar texto PUT
+exports.todo_actualizar_texto = async (req, res, next) => {
   try {
+    const { description } = req.body;
+
+    if (!description || description.trim() === "") {
+      return res.status(400).json({
+        error: "La descripción es obligatoria",
+      });
+    }
+
     const updated = await Todo.findByIdAndUpdate(
       req.params.id,
-      { description: req.body.description, done: req.body.done },
-      { new: true }
+      {
+        description: description.trim(),
+        date: new Date(),
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
     );
+
+    if (!updated) {
+      return res.status(404).json({
+        error: "Tarea no encontrada",
+      });
+    }
+
     res.json(updated);
   } catch (err) {
     next(err);
   }
 };
 
-// Eliminar un todo
+// Actualizar estado PATCH
+exports.todo_actualizar_hecho = async (req, res, next) => {
+  try {
+    const { done } = req.body;
+
+    if (typeof done !== "boolean") {
+      return res.status(400).json({
+        error: "El campo done debe ser true o false",
+      });
+    }
+
+    const updated = await Todo.findByIdAndUpdate(
+      req.params.id,
+      {
+        done: done,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        error: "Tarea no encontrada",
+      });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Eliminar
 exports.todo_delete = async (req, res, next) => {
   try {
-    await Todo.findByIdAndDelete(req.params.id);
+    const deleted = await Todo.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.status(404).json({
+        error: "Tarea no encontrada",
+      });
+    }
+
     res.status(204).send();
   } catch (err) {
     next(err);
