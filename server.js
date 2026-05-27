@@ -2,17 +2,17 @@ const express = require("express");
 const mongoose = require("mongoose");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const cors = require("cors");
-
+const cors = require("cors");              //react conect backend
 const todoRouter = require("./routes/todo");
+
 const app = express();
 
 // Middleware
-app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(cors());
+app.use(morgan("dev")); //muestra pet consol
+app.use(bodyParser.json()); //leer json
+app.use(cors());            //desde react
 
-// Rutas
+// manejo Rutas
 app.use("/todos", todoRouter);
 
 // Conexión a MongoDB
@@ -22,11 +22,11 @@ mongoose.connect(mongoDB)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
-// Manejo de errores
+// Manejo de errores, rutas,contrladores
 app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
 // Iniciar servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = process.env.PORT || 5000; //def puerto
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));  //escuch peticiones

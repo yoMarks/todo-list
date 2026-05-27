@@ -12,14 +12,14 @@ body {
   width: 90%;
   min-height: 520px;
   margin: 40px auto;
-  border: 4px solid black;
+  border: 2px solid black;
   display: grid;
   grid-template-columns: 1fr 1fr;
   background-color: white;
 }
 
 .form-section {
-  border-right: 4px solid black;
+  border-right: 2px solid black;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,23 +39,18 @@ form {
 }
 
 input {
-  width: 240px;
+  width: 250px;
   height: 42px;
-  border: 4px solid black;
+  border: 2px solid black;
+  border-radius: 4px;
   font-size: 16px;
-  padding: 5px 10px;
+  padding: 8px 12px;
+  outline: none;
 }
 
-button {
-  cursor: pointer;
-  font-weight: bold;
-}
-
-form button {
-  padding: 8px 18px;
-  border: 4px solid black;
-  border-radius: 8px;
-  background-color: white;
+input:focus {
+  border-color: black;
+  box-shadow: 0 0 0 2px #dddddd;
 }
 
 .list-section {
@@ -73,8 +68,49 @@ table {
 
 th,
 td {
-  border: 4px solid black;
-  padding: 10px;
+  border: 2px solid black;
+  padding: 12px;
   text-align: center;
   font-size: 15px;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+td:first-child {
+  cursor: pointer;
+}
+
+td:first-child:hover {
+  background-color: #f7f7f7;
+}
+
+.icon-button,
+.edit-button,
+.delete-button {
+  border: none;
+  background-color: transparent;
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-button:hover,
+.edit-button:hover,
+.delete-button:hover {
+  transform: scale(1.1);
+}
+
+.material-symbols-outlined {
+  font-size: 26px;
+  color: inherit;
+}
+
+.done-text {
+  text-decoration: line-through;
+  color: gray;
 }

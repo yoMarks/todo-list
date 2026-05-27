@@ -7,8 +7,8 @@ const TodoSchema = new Schema({
   done: { type: Boolean, default: false }
 });
 
-TodoSchema.virtual("url").get(function() {
-  return `/todos/${this._id}`;
+TodoSchema.virtual("url").get(function() { //crear campo virtual url
+  return `/todos/${this._id}`;              //ruta de esa tarea
 });
 
-module.exports = mongoose.model("Todo", TodoSchema);
+module.exports = mongoose.model("Todo", TodoSchema); //convertir squema en modelo
