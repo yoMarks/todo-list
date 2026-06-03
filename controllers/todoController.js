@@ -1,9 +1,10 @@
+//L
 const Todo = require("../models/todo");
 
 // Listar todo
-exports.todo_list = async (req, res, next) => {
-  try {
-    const todos = await Todo.find().sort({ date: -1 }).exec();
+exports.todo_list = async (req, res, next) => { //expor funcion  caso de rutas /req peticion que llega, /res respuesta enviar /next pasar error al manejado
+  try {       //con puede fallar
+    const todos = await Todo.find().sort({ date: -1 }).exec(); //asyn espera op asincronads /await esperar respuesta
     res.json(todos);
   } catch (err) {
     next(err);
