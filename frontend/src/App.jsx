@@ -2,11 +2,16 @@ import { useEffect, useState } from "react";
 import "./App.css";
 
 const API_URL = "http://localhost:5000/todos";
+const FILES_URL = "http://localhost:5000/files";
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [description, setDescription] = useState("");
-  const [editingId, setEditingId] = useState(null);
+  const [todos, setTodos] = useState([]); //lista tareas
+  const [description, setDescription] = useState("");//texto tarea form
+  const [editingId, setEditingId] = useState(null); //guard id tarea editando
+  const [files, setFiles] = useState([]);//list archivos subidos
+  const [selectedFiles, setSelectedFiles] = useState({}); //Guarda temp
+  const [paginaActual, setPaginaActual] = useState(1); //Guarda la página actual de la tabla
+  const tareasPorPagina = 3;
 
   async function getTodos() {
     try {
@@ -18,8 +23,59 @@ function App() {
     }
   }
 
+  async function getFiles() {
+    try {
+      const response = await fetch(FILES_URL);
+      const data = await response.json();
+      setFiles(data);
+    } catch (error) {
+      console.error("Error al obtener archivos:", error);
+    }
+  }
+
+  function handleFileChange(todoId, file) {
+    setSelectedFiles({
+      ...selectedFiles,
+      [todoId]: file,
+    });
+  }
+
+  async function uploadFileToTodo(todoId) {
+    const file = selectedFiles[todoId];
+
+    if (!file) {
+      alert("Selecciona un archivo primero");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("document", file);
+
+    try {
+      await fetch(`${API_URL}/${todoId}/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      setSelectedFiles({
+        ...selectedFiles,
+        [todoId]: null,
+      });
+
+      await getFiles();
+      alert("Archivo subido correctamente");
+    } catch (error) {
+      console.error("Error al subir archivo:", error);
+    }
+  }
+
+  function downloadFile(fileId) {
+    window.open(`${FILES_URL}/${fileId}/download`, "_blank");
+  }
+
   useEffect(() => {
     getTodos();
+    getFiles();
   }, []);
 
   async function handleSubmit(event) {
@@ -39,6 +95,7 @@ function App() {
     setDescription("");
     setEditingId(null);
     await getTodos();
+    setPaginaActual(1);
   }
 
   async function createTodo() {
@@ -91,23 +148,29 @@ function App() {
     }
   }
 
-  async function deleteTodo(id) {
-    const confirmDelete = confirm("¿Seguro que quieres eliminar esta tarea?");
+async function deleteTodo(id) {
+  const confirmDelete = confirm("¿Seguro que quieres eliminar esta tarea?");
 
-    if (!confirmDelete) {
-      return;
-    }
-
-    try {
-      await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-
-      await getTodos();
-    } catch (error) {
-      console.error("Error al eliminar tarea:", error);
-    }
+  if (!confirmDelete) {
+    return;
   }
+
+  try {
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo eliminar la tarea");
+    }
+
+    await getTodos();
+    await getFiles();
+    setPaginaActual(1);
+  } catch (error) {
+    console.error("Error al eliminar tarea:", error);
+  }
+}
 
   function startEdit(todo) {
     setDescription(todo.description);
@@ -127,6 +190,24 @@ function App() {
       hour: "2-digit",
       minute: "2-digit",
     });
+  }
+
+  const indiceUltimaTarea = paginaActual * tareasPorPagina;
+  const indicePrimeraTarea = indiceUltimaTarea - tareasPorPagina;
+  const tareasPaginadas = todos.slice(indicePrimeraTarea, indiceUltimaTarea);
+
+  const totalPaginas = Math.ceil(todos.length / tareasPorPagina);
+
+  function paginaAnterior() {
+    if (paginaActual > 1) {
+      setPaginaActual(paginaActual - 1);
+    }
+  }
+
+  function paginaSiguiente() {
+    if (paginaActual < totalPaginas) {
+      setPaginaActual(paginaActual + 1);
+    }
   }
 
   return (
@@ -161,6 +242,7 @@ function App() {
               <th>Tarea</th>
               <th>Fecha</th>
               <th>Hecho</th>
+              <th>Archivo</th>
               <th>Editar</th>
               <th>Eliminar</th>
             </tr>
@@ -169,10 +251,10 @@ function App() {
           <tbody>
             {todos.length === 0 ? (
               <tr>
-                <td colSpan="5">No hay tareas registradas</td>
+                <td colSpan="6">No hay tareas registradas</td>
               </tr>
             ) : (
-              todos.map((todo) => (
+              tareasPaginadas.map((todo) => (
                 <tr key={todo._id}>
                   <td
                     className={todo.done ? "done-text" : ""}
@@ -193,6 +275,22 @@ function App() {
                       <span className="material-symbols-outlined">
                         {todo.done ? "check_box" : "check_box_outline_blank"}
                       </span>
+                    </button>
+                  </td>
+
+                  <td>
+                    <input
+                      type="file"
+                      onChange={(event) =>
+                        handleFileChange(todo._id, event.target.files[0])
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => uploadFileToTodo(todo._id)}
+                    >
+                      Subir
                     </button>
                   </td>
 
@@ -220,6 +318,56 @@ function App() {
             )}
           </tbody>
         </table>
+
+        {todos.length > tareasPorPagina && (
+          <div className="pagination">
+            <button
+              type="button"
+              onClick={paginaAnterior}
+              disabled={paginaActual === 1}
+            >
+              Anterior
+            </button>
+
+            <span>
+              Página {paginaActual} de {totalPaginas}
+            </span>
+
+            <button
+              type="button"
+              onClick={paginaSiguiente}
+              disabled={paginaActual === totalPaginas}
+            >
+              Siguiente
+            </button>
+          </div>
+        )}
+
+      </section>
+      <section className="files-section">
+        <h2>Archivos subidos</h2>
+
+        {files.length === 0 ? (
+          <p>No hay archivos subidos</p>
+        ) : (
+          <ul>
+            {files.map((file) => (
+              <li key={file._id}>
+                <span>{file.originalName}</span>
+
+                {file.todo && (
+                  <small>
+                    {" "} - Tarea: {file.todo.description}
+                  </small>
+                )}
+
+                <button onClick={() => downloadFile(file._id)}>
+                  Descargar
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </main>
   );

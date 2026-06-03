@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const todoController = require("../controllers/todoController");
+const todoController = require("../controllers/todoController");//importar sus funciones
 const fileController = require("../controllers/fileController");
 const upload = require("../middlewares/upload");
 
@@ -9,7 +9,7 @@ const upload = require("../middlewares/upload");
 router.get("/", todoController.todo_list);
 
 // Crear
-router.post("/", todoController.todo_create);
+router.post("/", todoController.todo_create);//f
 
 // Subir archivo a una tarea
 router.post("/:id/upload", upload.single("document"), fileController.file_upload_to_todo);
@@ -26,4 +26,4 @@ router.patch("/:id", todoController.todo_actualizar_hecho);
 // Eliminar
 router.delete("/:id", todoController.todo_delete);
 
-module.exports = router;
+module.exports = router; //expor para usar ser.js

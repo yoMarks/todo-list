@@ -1,20 +1,19 @@
-require("dotenv").config();
+require("dotenv").config(); //cargar variables entorno
 
-const express = require("express");
+const express = require("express"); // importa express
 const mongoose = require("mongoose");
-const morgan = require("morgan");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-
+const morgan = require("morgan"); //peticiones en consol
+const bodyParser = require("body-parser"); //permite leer json postman o react
+const cors = require("cors"); //coneccion con react
 const todoRouter = require("./routes/todo");
 const fileRouter = require("./routes/file");
 
 const app = express();
 
-// Middleware
+// configuran Middleware
 app.use(morgan("dev"));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors()); //permite a react llamar desde otro puerto
 
 // Rutas
 app.use("/todos", todoRouter);
@@ -24,13 +23,13 @@ app.use("/files", fileRouter);
 const mongoDB = process.env.MONGODB_URI;
 
 mongoose
-  .connect(mongoDB)
+  .connect(mongoDB) //conect back con moDB
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => console.error("MongoDB connection error:", err));//falla ip, uri,internet
 
-// Manejo de errores
+// Manejo de errores de controlle por next(err)
 app.use((err, req, res, next) => {
-  res.status(500).json({
+  res.status(500).json({//err interno serv
     error: err.message,
   });
 });
@@ -40,4 +39,4 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-});
+});//enciende servidor

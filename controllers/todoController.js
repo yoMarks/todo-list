@@ -1,10 +1,13 @@
 //L
-const Todo = require("../models/todo");
+const Todo = require("../models/todo"); //Todo.find()...
+const fs = require("fs"); //trabajar con arc del sistem
+const path = require("path"); //convertir a rut apsoluta
+const File = require("../models/file"); //repre archivos guard en mongoDB
 
 // Listar todo
-exports.todo_list = async (req, res, next) => { //expor funcion  caso de rutas /req peticion que llega, /res respuesta enviar /next pasar error al manejado
+exports.todo_list = async (req, res, next) => { //expor funcion  caso de rutas /req peticion client, /res respuesta enviar al cliente /next pasar error al manejado
   try {       //con puede fallar
-    const todos = await Todo.find().sort({ date: -1 }).exec(); //asyn espera op asincronads /await esperar respuesta
+    const todos = await Todo.find().sort({ date: -1 }).exec(); //
     res.json(todos);
   } catch (err) {
     next(err);
@@ -17,7 +20,7 @@ exports.todo_create = async (req, res, next) => {
     const { description } = req.body;
 
     if (!description || description.trim() === "") {
-      return res.status(400).json({
+      return res.status(400).json({//vacio
         error: "La descripción es obligatoria",
       });
     }
@@ -29,7 +32,7 @@ exports.todo_create = async (req, res, next) => {
     });
 
     const saved = await todo.save();
-    res.status(201).json(saved);
+    res.status(201).json(saved);//201 creado
   } catch (err) {
     next(err);
   }
@@ -41,7 +44,7 @@ exports.todo_actualizar_texto = async (req, res, next) => {
     const { description } = req.body;
 
     if (!description || description.trim() === "") {
-      return res.status(400).json({
+      return res.status(400).json({//esta vacio
         error: "La descripción es obligatoria",
       });
     }
@@ -53,13 +56,13 @@ exports.todo_actualizar_texto = async (req, res, next) => {
         date: new Date(),
       },
       {
-        new: true,
-        runValidators: true,
+        new: true, //dev doc atualizado
+        runValidators: true,//app val
       }
     );
 
     if (!updated) {
-      return res.status(404).json({
+      return res.status(404).json({ //no existe tarea con ese id
         error: "Tarea no encontrada",
       });
     }
@@ -107,15 +110,35 @@ exports.todo_actualizar_hecho = async (req, res, next) => {
 // Eliminar
 exports.todo_delete = async (req, res, next) => {
   try {
-    const deleted = await Todo.findByIdAndDelete(req.params.id);
+    const todo = await Todo.findById(req.params.id).exec();
 
-    if (!deleted) {
-      return res.status(404).json({
+    if (!todo) {
+      return res.status(404).json({//no encontrado
         error: "Tarea no encontrada",
       });
     }
 
-    res.status(204).send();
+    // Buscar archivos vinculados a esta tarea
+    const files = await File.find({ todo: todo._id }).exec();
+
+    // Eliminar archivos físicos de la carpeta uploads
+    for (const file of files) {
+      const filePath = path.resolve(file.path);//convierte en rut absoluta
+
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    // Eliminar registros de archivos en MongoDB
+    await File.deleteMany({ todo: todo._id });
+
+    // Eliminar la tarea
+    await Todo.findByIdAndDelete(todo._id);
+
+    res.json({
+      message: "Tarea y archivos vinculados eliminados correctamente",
+    });
   } catch (err) {
     next(err);
   }
