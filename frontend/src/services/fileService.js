@@ -13,6 +13,14 @@ export async function getFiles() {
   return handleResponse(response);
 }
 
+export async function deleteFileById(fileId) {
+  const response = await fetch(`${FILES_URL}/${fileId}`, {
+    method: "DELETE",
+  });
+
+  return handleResponse(response);
+}
+
 export function getDownloadFileUrl(fileId) {
   return `${FILES_URL}/${fileId}/download`;
 }

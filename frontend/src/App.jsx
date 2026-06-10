@@ -18,6 +18,7 @@ import {
 import {
   getFiles,
   getDownloadFileUrl,
+  deleteFileById,
 } from "./services/fileService";
 
 function App() {
@@ -111,6 +112,22 @@ function App() {
     window.open(getDownloadFileUrl(fileId), "_blank");
   }
 
+  async function handleDeleteFile(fileId) {
+    const confirmDelete = confirm("¿Seguro que quieres eliminar este archivo?");
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      await deleteFileById(fileId);
+      await loadFiles();
+      alert("Archivo eliminado correctamente");
+    } catch (error) {
+      console.error("Error al eliminar archivo:", error);
+    }
+  }
+
   async function handleToggleDone(todo) {
     try {
       await updateTodoDone(todo._id, !todo.done);
@@ -197,6 +214,7 @@ function App() {
       <FileList
         files={files}
         onDownloadFile={handleDownloadFile}
+        onDeleteFile={handleDeleteFile}
       />
     </main>
   );

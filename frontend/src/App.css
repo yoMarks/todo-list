@@ -234,3 +234,34 @@ td input[type="file"] + button {
   align-items: center;
   gap: 12px;
 }
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.file-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.file-actions button {
+  padding: 7px 12px;
+  border: 2px solid black;
+  background-color: white;
+  font-size: 14px;
+}
+
+.file-actions button:hover {
+  background-color: #f2f2f2;
+}
+
+.delete-file-button {
+  background-color: #ffe5e5;
+}
+
+.delete-file-button:hover {
+  background-color: #ffcccc;
+}
