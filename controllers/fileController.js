@@ -3,10 +3,12 @@ const fs = require("fs");
 const File = require("../models/file");
 const Todo = require("../models/todo");
 
-// Listar todos los archivos
+// Listar solo archivos del usuario autenticado
 exports.file_list = async (req, res, next) => {
   try {
-    const files = await File.find()
+    const files = await File.find({
+      user: req.user._id,
+    })
       .populate("todo", "description done")
       .sort({ uploadedAt: -1 })
       .exec();
@@ -33,6 +35,7 @@ exports.file_upload_general = async (req, res, next) => {
       mimeType: req.file.mimetype,
       size: req.file.size,
       todo: null,
+      user: req.user._id,
     });
 
     const saved = await file.save();
@@ -43,14 +46,17 @@ exports.file_upload_general = async (req, res, next) => {
   }
 };
 
-// Subir archivo asociado a una tarea
+// Subir archivo asociado a una tarea del usuario autenticado
 exports.file_upload_to_todo = async (req, res, next) => {
   try {
-    const todo = await Todo.findById(req.params.id).exec();
+    const todo = await Todo.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    }).exec();
 
     if (!todo) {
       return res.status(404).json({
-        error: "Tarea no encontrada",
+        error: "Tarea no encontrada o no pertenece al usuario",
       });
     }
 
@@ -67,6 +73,7 @@ exports.file_upload_to_todo = async (req, res, next) => {
       mimeType: req.file.mimetype,
       size: req.file.size,
       todo: todo._id,
+      user: req.user._id,
     });
 
     const saved = await file.save();
@@ -77,18 +84,24 @@ exports.file_upload_to_todo = async (req, res, next) => {
   }
 };
 
-// Listar archivos de una tarea
+// Listar archivos de una tarea del usuario autenticado
 exports.file_list_by_todo = async (req, res, next) => {
   try {
-    const todo = await Todo.findById(req.params.id).exec();
+    const todo = await Todo.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    }).exec();
 
     if (!todo) {
       return res.status(404).json({
-        error: "Tarea no encontrada",
+        error: "Tarea no encontrada o no pertenece al usuario",
       });
     }
 
-    const files = await File.find({ todo: req.params.id })
+    const files = await File.find({
+      todo: req.params.id,
+      user: req.user._id,
+    })
       .sort({ uploadedAt: -1 })
       .exec();
 
@@ -98,14 +111,17 @@ exports.file_list_by_todo = async (req, res, next) => {
   }
 };
 
-// Descargar archivo
+// Descargar archivo del usuario autenticado
 exports.file_download = async (req, res, next) => {
   try {
-    const file = await File.findById(req.params.id).exec();
+    const file = await File.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    }).exec();
 
     if (!file) {
       return res.status(404).json({
-        error: "Archivo no encontrado",
+        error: "Archivo no encontrado o no pertenece al usuario",
       });
     }
 
@@ -123,14 +139,17 @@ exports.file_download = async (req, res, next) => {
   }
 };
 
-// Eliminar archivo
+// Eliminar archivo del usuario autenticado
 exports.file_delete = async (req, res, next) => {
   try {
-    const file = await File.findById(req.params.id).exec();
+    const file = await File.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    }).exec();
 
     if (!file) {
       return res.status(404).json({
-        error: "Archivo no encontrado",
+        error: "Archivo no encontrado o no pertenece al usuario",
       });
     }
 
@@ -140,7 +159,10 @@ exports.file_delete = async (req, res, next) => {
       fs.unlinkSync(filePath);
     }
 
-    await File.findByIdAndDelete(req.params.id);
+    await File.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user._id,
+    });
 
     res.json({
       message: "Archivo eliminado correctamente",
