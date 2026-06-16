@@ -1,9 +1,11 @@
+//cofig passport con estrategia usuario y contraseña
+
 const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
+const LocalStrategy = require("passport-local").Strategy;//import estrategia local
 
 const User = require("../models/user");
 
-passport.use(
+passport.use( //uso de estrategia local
   new LocalStrategy(
     {
       usernameField: "email",

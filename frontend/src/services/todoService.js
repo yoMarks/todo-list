@@ -1,15 +1,23 @@
 import { TODOS_URL } from "../config/api";
+import { getAuthHeaders } from "./authService";
 
 async function handleResponse(response) {
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error("Error en la petición al servidor");
+    throw new Error(data.error || data.message || "Error en la petición al servidor");
   }
 
-  return response.json();
+  return data;
 }
 
 export async function getTodos() {
-  const response = await fetch(TODOS_URL);
+  const response = await fetch(TODOS_URL, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
   return handleResponse(response);
 }
 
@@ -18,6 +26,7 @@ export async function createTodo(description) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ description }),
   });
@@ -30,6 +39,7 @@ export async function updateTodoText(id, description) {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ description }),
   });
@@ -42,6 +52,7 @@ export async function updateTodoDone(id, done) {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      ...getAuthHeaders(),
     },
     body: JSON.stringify({ done }),
   });
@@ -52,6 +63,9 @@ export async function updateTodoDone(id, done) {
 export async function deleteTodoById(id) {
   const response = await fetch(`${TODOS_URL}/${id}`, {
     method: "DELETE",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
 
   return handleResponse(response);
@@ -63,6 +77,9 @@ export async function uploadFileToTodo(todoId, file) {
 
   const response = await fetch(`${TODOS_URL}/${todoId}/upload`, {
     method: "POST",
+    headers: {
+      ...getAuthHeaders(),
+    },
     body: formData,
   });
 

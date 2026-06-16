@@ -8,6 +8,10 @@ body {
   background-color: #f4f4f4;
 }
 
+button {
+  transition: all 0.2s ease;
+}
+
 .app-container {
   width: 94%;
   min-height: 100vh;
@@ -264,4 +268,90 @@ td input[type="file"] + button {
 
 .delete-file-button:hover {
   background-color: #ffcccc;
+}
+
+
+.auth-section form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-section input {
+  padding: 10px;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.user-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.logout-button {
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+/* Pantalla separada para login/register */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+}
+
+.auth-section {
+  width: 420px;
+  min-height: auto;
+  padding: 30px;
+  border: 2px solid black;
+  background-color: white;
+}
+
+.auth-section h1 {
+  text-align: center;
+}
+
+.auth-section p {
+  text-align: center;
+}
+
+.link-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+/* Barra de sesión fuera del grid del Todo List */
+.session-bar {
+  width: 94%;
+  margin: 20px auto 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+}
+
+.logout-button {
+  padding: 8px 14px;
+  border: 2px solid black;
+  background-color: white;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background-color: #f2f2f2;
 }

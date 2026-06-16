@@ -1,16 +1,18 @@
 //levantar server
-require("dotenv").config(); //leer variables entorno env.
+
+require("dotenv").config(); //leer var .env
 
 const express = require("express"); // importa express
 const mongoose = require("mongoose"); //conectar node conMoongoDB
 const morgan = require("morgan"); //mostrar peticiones en consol
 const bodyParser = require("body-parser"); //permite leer json postman o react
 const cors = require("cors"); //coneccion con react
+
 const todoRouter = require("./routes/todo");
 const fileRouter = require("./routes/file");
-const passport = require("./config/passport");
-const authRouter = require("./routes/auth");
-const { verifyToken } = require("./middlewares/authMiddleware");
+const authRouter = require("./routes/auth");  //import rutas auth
+const passport = require("./config/passport"); //import conf passport
+const { verifyToken } = require("./middlewares/authMiddleware");  //import us mando token JWT val
 
 const app = express();
 
@@ -18,10 +20,10 @@ const app = express();
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cors()); //permite a react llamar desde otro puerto
-app.use(passport.initialize());
+app.use(passport.initialize()); //activa passport dentro express
 
-// conectan las rutas
-app.use("/auth", authRouter); //ruta auth
+// conectar las rutas
+app.use("/auth", authRouter);
 app.use("/todos", verifyToken, todoRouter); //protegida con JWT
 app.use("/files", verifyToken, fileRouter);
 

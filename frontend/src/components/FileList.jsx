@@ -20,7 +20,7 @@ function FileList({ files, onDownloadFile, onDeleteFile }) {
               </div>
 
               <div className="file-actions">
-                <button onClick={() => onDownloadFile(file._id)}>
+                <button onClick={() => onDownloadFile(file)}>
                   Descargar
                 </button>
 
