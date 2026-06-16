@@ -6,7 +6,7 @@ import TodoTable from "./components/TodoTable";
 import Pagination from "./components/Pagination";
 import FileList from "./components/FileList";
 
-import {
+import { //llamar servicios, no hace directo uso del fetch
   getTodos,
   createTodo,
   updateTodoText,
@@ -15,16 +15,16 @@ import {
   uploadFileToTodo,
 } from "./services/todoService";
 
-import {
+import { //llamar servicios
   getFiles,
   getDownloadFileUrl,
   deleteFileById,
 } from "./services/fileService";
 
 function App() {
-  const [todos, setTodos] = useState([]);
-  const [description, setDescription] = useState("");
-  const [editingId, setEditingId] = useState(null);
+  const [todos, setTodos] = useState([]);//estados
+  const [description, setDescription] = useState(""); //text form
+  const [editingId, setEditingId] = useState(null);//id de la tarea idtanddose
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState({});
   const [currentPage, setCurrentPage] = useState(1);

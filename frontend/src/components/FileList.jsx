@@ -14,7 +14,7 @@ function FileList({ files, onDownloadFile, onDeleteFile }) {
 
                 {file.todo && (
                   <small>
-                    {" "} - Tarea: {file.todo.description}
+                    {" "} Tarea: {file.todo.description}
                   </small>
                 )}
               </div>

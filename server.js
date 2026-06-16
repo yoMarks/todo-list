@@ -1,8 +1,9 @@
-require("dotenv").config(); //cargar variables entorno
+//levantar server
+require("dotenv").config(); //leer variables entorno env.
 
 const express = require("express"); // importa express
-const mongoose = require("mongoose");
-const morgan = require("morgan"); //peticiones en consol
+const mongoose = require("mongoose"); //conectar node conMoongoDB
+const morgan = require("morgan"); //mostrar peticiones en consol
 const bodyParser = require("body-parser"); //permite leer json postman o react
 const cors = require("cors"); //coneccion con react
 const todoRouter = require("./routes/todo");
@@ -15,7 +16,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(cors()); //permite a react llamar desde otro puerto
 
-// Rutas
+// conectan las rutas
 app.use("/todos", todoRouter);
 app.use("/files", fileRouter);
 
