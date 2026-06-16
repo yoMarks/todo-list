@@ -1,24 +1,58 @@
-Autor:Cristian Heredia Suaznabar
+Todo-List
 
-**Todo List **
-Permite añadir tareas, ver la lista, mostrar fecha y hora de guardado, editar el texto, marcar como hecho o pendiente y eliminar tareas.
+Autor: Cristian Heredia Suaznabar
 
-### Backend
+Descripción del proyecto
+Aplicación web Todo-List que permite a los usuarios:
+
+- Registrar tareas
+- Ver lista de tareas
+- Mostrar fecha y hora de creación
+- Editar tareas
+- Marcar como completadas o pendientes
+- Eliminar tareas
+- Subir y descargar archivos por tarea
+- Autenticación de usuarios registro, login y perfil protegido
+
+El sistema incluye autenticación con JWT, control de sesiones y rutas protegidas.
+
+Funcionalidades principales
+- CRUD completo de tareas
+- Autenticación de usuarios
+- Protección de rutas con JWT
+- Subida y descarga de archivos
+- Paginación de tareas
+- Interfaz dinámica en React
+- Validación de datos en backend
+
+Backend
+
 - Node.js
 - Express.js
 - MongoDB Atlas
 - Mongoose
-- CORS
-- Morgan
-- Nodemon
+- Passport.js
+- JWT 
+- bcrypt
 
-### Frontend
-- React
-- Vite
+Frontend
+
+- React+Vite
 - JavaScript
 - CSS
 - Fetch API
 - Google Fonts / Material Symbols
+
+Autenticación
+
+El sistema utiliza:
+
+- Registro de usuarios
+- Login con Passport Local
+- Hash de contraseñas con bcrypt
+- Generación de token JWT
+- Rutas protegidas (profile, futuras rutas privadas)
+- Almacenamiento del token en el cliente
 
 Instalacion
 1.Clonar repositorio
@@ -35,15 +69,6 @@ http://localhost:5000
 
 Frontend se ejecuta en:
 http://localhost:5173
-
-Pruebas con postman
-GET    http://localhost:5000/todos
-POST   http://localhost:5000/todos
-PUT    http://localhost:5000/todos/:id
-PATCH  http://localhost:5000/todos/:id
-DELETE http://localhost:5000/todos/:id
-
-
 
 Nota:
 Se conto con ayuda de la IA y asistencia durante el desarrollo.
