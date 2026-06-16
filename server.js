@@ -10,6 +10,7 @@ const todoRouter = require("./routes/todo");
 const fileRouter = require("./routes/file");
 const passport = require("./config/passport");
 const authRouter = require("./routes/auth");
+const { verifyToken } = require("./middlewares/authMiddleware");
 
 const app = express();
 
@@ -20,11 +21,11 @@ app.use(cors()); //permite a react llamar desde otro puerto
 app.use(passport.initialize());
 
 // conectan las rutas
-app.use("/auth", authRouter);
-app.use("/todos", todoRouter);
-app.use("/files", fileRouter);
+app.use("/auth", authRouter); //ruta auth
+app.use("/todos", verifyToken, todoRouter); //protegida con JWT
+app.use("/files", verifyToken, fileRouter);
 
-// Conexión a MongoDB
+// conexión a MongoDB
 const mongoDB = process.env.MONGODB_URI;
 
 mongoose
